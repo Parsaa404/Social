@@ -38,3 +38,14 @@ export const updatePostStatus = async (postId: string, status: string) => {
         data: { status },
     });
 };
+
+export const getPostsByUserId = async (userId: string) => {
+    return prisma.post.findMany({
+        where: {
+            userId: userId,
+        },
+        orderBy: {
+            createdAt: 'desc',
+        },
+    });
+};

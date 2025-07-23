@@ -2,22 +2,37 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import api from '../../lib/api';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Logic to send data to the backend API
-    console.log({ email, password });
-    alert('Login successful (mock)!');
+    setError('');
+    try {
+      const response = await api.post('/auth/login', { email, password });
+      if (response.data.token) {
+        // In a real app, you'd store the token securely (e.g., in an HttpOnly cookie or context)
+        localStorage.setItem('token', response.data.token);
+        alert('Login successful!');
+        router.push('/dashboard');
+      }
+    } catch (err) {
+      setError('Invalid email or password.');
+      console.error(err);
+    }
   };
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">

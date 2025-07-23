@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import authRouter from './auth/auth.router';
 import connectRouter from './connect/connect.router';
 import postsRouter from './posts/posts.router';
@@ -9,10 +10,13 @@ import './scheduler/scheduler'; // Start the scheduler
 const app = express();
 const port = process.env.PORT || 3001;
 
+// Enable CORS for all routes
+app.use(cors());
+
 app.use(express.json());
 app.use(session({ secret: 'keyboard cat', resave: false, saveUninitialized: false }));
 app.use(passport.initialize());
-app.use(passport.session());
+// No app.use(passport.session()) as we handle auth via JWT
 
 app.use('/api/auth', authRouter);
 app.use('/api/connect', connectRouter);
